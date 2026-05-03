@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { IncidentInput } from './components/IncidentInput';
 import { OntologyPanel } from './components/OntologyPanel';
 import { RecommendationPanel } from './components/RecommendationPanel';
 import { ActionLog } from './components/ActionLog';
-import { SystemState, RecommendedAction, LogEntry } from './types';
+import { SystemState, LogEntry } from './types';
 import { parseIncident, generateId } from './utils/parser';
 import { Activity } from 'lucide-react';
 

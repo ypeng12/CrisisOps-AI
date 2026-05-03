@@ -1,7 +1,7 @@
 export type Severity = 'Low' | 'Medium' | 'High' | 'Critical';
 export type IncidentStatus = 'New' | 'Triaged' | 'Escalated' | 'Resolved';
 export type LocationStatus = 'Normal' | 'At Risk' | 'Restricted';
-export type AssetStatus = 'Operational' | 'Degraded' | 'Offline';
+export type AssetStatus = 'Operational' | 'Degraded' | 'Offline' | 'At Risk';
 export type TeamStatus = 'Available' | 'Assigned' | 'En Route';
 export type ActionState = 'Pending' | 'Approved' | 'Hold' | 'Rejected';
 
