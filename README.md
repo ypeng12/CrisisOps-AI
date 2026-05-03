@@ -2,7 +2,9 @@
 
 ![CrisisOps AI Dashboard](./docs/assets/dashboard.png)
 
-[![Deployment](https://img.shields.io/badge/Deployment-Live%20Demo-brightgreen)](https://crisis-ops-ai.vercel.app)
+## 🔗 Live Demo: [https://crisis-ops-ai.vercel.app](https://crisis-ops-ai.vercel.app)
+
+[![Deployment](https://img.shields.io/badge/Deployment-Vercel-brightgreen)](https://crisis-ops-ai.vercel.app)
 [![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20TS%20%7C%20Vite%20%7C%20TailwindV4-blue)](./package.json)
 [![Inspiration](https://img.shields.io/badge/Inspired%20by-Palantir%20AIP-orange)](https://www.palantir.com/platforms/aip/)
 
