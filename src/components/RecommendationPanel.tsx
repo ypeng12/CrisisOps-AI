@@ -66,7 +66,7 @@ export const RecommendationPanel: React.FC<Props> = ({ t, actions, onActionState
                   <button 
                     onClick={() => onActionStateChange(action.id, 'Approved')}
                     className="p-1 rounded bg-green-950/30 text-green-400 hover:bg-green-900/50 border border-green-900/30 transition-colors"
-                    title={t.approve}
+                    title={t.approved}
                   >
                     <Check size={16} />
                   </button>
@@ -80,7 +80,7 @@ export const RecommendationPanel: React.FC<Props> = ({ t, actions, onActionState
                   <button 
                     onClick={() => onActionStateChange(action.id, 'Rejected')}
                     className="p-1 rounded bg-red-950/30 text-red-400 hover:bg-red-900/50 border border-red-900/30 transition-colors"
-                    title={t.reject}
+                    title={t.rejected}
                   >
                     <X size={16} />
                   </button>

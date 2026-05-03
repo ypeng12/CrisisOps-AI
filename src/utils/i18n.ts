@@ -29,9 +29,9 @@ export const translations = {
     noLogs: "No actions recorded. System standing by.",
     
     // Actions
-    approve: "Approve",
+    approved: "Approved",
     hold: "Hold",
-    reject: "Reject",
+    rejected: "Rejected",
     
     // Actor
     system: "System",
@@ -67,9 +67,9 @@ export const translations = {
     noLogs: "尚无记录。系统待命中。",
     
     // Actions
-    approve: "批准执行",
+    approved: "批准执行",
     hold: "搁置",
-    reject: "拒绝",
+    rejected: "拒绝执行",
     
     // Actor
     system: "系统",
