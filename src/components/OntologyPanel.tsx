@@ -1,7 +1,7 @@
 import React from 'react';
 import { SystemState } from '../types';
 import { StatusBadge } from './StatusBadge';
-import { Network, MapPin, Box, Users, Activity, Share2 } from 'lucide-react';
+import { Network, MapPin, Box, Users, Activity, Share2, Server, User } from 'lucide-react';
 import { translations } from '../utils/i18n';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -43,10 +43,9 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
           <Network className="text-accent" size={20} />
           <h2 className="text-lg font-semibold tracking-wide">{t.operationalTwin}</h2>
         </div>
-        <div className="flex gap-1">
-           <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-           <div className="w-1.5 h-1.5 rounded-full bg-accent/60 animate-pulse delay-75" />
-           <div className="w-1.5 h-1.5 rounded-full bg-accent/30 animate-pulse delay-150" />
+        <div className="flex items-center gap-4 text-[10px] font-mono text-textMuted">
+           <div className="flex items-center gap-1"><Server size={10} className="text-accent" /> SENSOR</div>
+           <div className="flex items-center gap-1"><User size={10} className="text-yellow-500" /> HUMAN</div>
         </div>
       </div>
 
@@ -79,11 +78,11 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
                     <Activity size={16} className="text-gray-400" />
                     <h3 className="font-semibold text-sm">{t.incident}</h3>
                   </div>
-                  <Share2 size={14} className="text-gray-600 group-hover:text-accent transition-colors cursor-pointer" />
+                  <User size={14} className="text-yellow-500/50" />
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="text-gray-400">{t.type}</div>
-                  <div className="font-mono text-xs">{state.incident?.type}</div>
+                  <div className="font-mono text-[11px] text-accent/80">{state.incident?.type}</div>
                   <div className="text-gray-400">{t.severity}</div>
                   <div><StatusBadge text={state.incident?.severity || ''} type="severity" /></div>
                   <div className="text-gray-400">{t.status}</div>
@@ -96,9 +95,12 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
               {/* Location Card */}
               {state.location && (
                 <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin size={16} className="text-gray-400" />
-                    <h3 className="font-semibold text-sm">{t.location}</h3>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <MapPin size={16} className="text-gray-400" />
+                      <h3 className="font-semibold text-sm">{t.location}</h3>
+                    </div>
+                    <Server size={14} className="text-accent/50" />
                   </div>
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-mono text-xs">{state.location.name}</span>
@@ -110,9 +112,12 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
               {/* Assets Card */}
               {state.assets && state.assets.length > 0 && (
                 <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Box size={16} className="text-gray-400" />
-                    <h3 className="font-semibold text-sm">{t.assets}</h3>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <Box size={16} className="text-gray-400" />
+                      <h3 className="font-semibold text-sm">{t.assets}</h3>
+                    </div>
+                    <Server size={14} className="text-accent/50" />
                   </div>
                   <div className="space-y-2">
                     {state.assets.map(asset => (
@@ -128,9 +133,12 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
               {/* Teams Card */}
               {state.teams && state.teams.length > 0 && (
                 <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users size={16} className="text-gray-400" />
-                    <h3 className="font-semibold text-sm">{t.teams}</h3>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <Users size={16} className="text-gray-400" />
+                      <h3 className="font-semibold text-sm">{t.teams}</h3>
+                    </div>
+                    <Server size={14} className="text-accent/50" />
                   </div>
                   <div className="space-y-2">
                     {state.teams.map(team => (
@@ -154,7 +162,7 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
            <span className="text-[10px] uppercase tracking-widest font-mono">Object Relationships</span>
         </div>
         <div className="h-12 flex items-center justify-center border border-dashed border-border/30 rounded">
-            <span className="text-[9px] text-textMuted font-mono italic">Graph view initialized...</span>
+            <span className="text-[9px] text-textMuted font-mono italic">Graph view active: Incident → Asset Impact Detected</span>
         </div>
       </div>
     </div>

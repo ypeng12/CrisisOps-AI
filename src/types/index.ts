@@ -1,22 +1,23 @@
 export type Severity = 'Low' | 'Medium' | 'High' | 'Critical';
-export type IncidentStatus = 'New' | 'Triaged' | 'Escalated' | 'Resolved';
-export type LocationStatus = 'Normal' | 'At Risk' | 'Restricted';
-export type AssetStatus = 'Operational' | 'Degraded' | 'Offline' | 'At Risk';
-export type TeamStatus = 'Available' | 'Assigned' | 'En Route';
-export type ActionState = 'Pending' | 'Approved' | 'Hold' | 'Rejected';
+export type IncidentStatus = 'Triaged' | 'In Progress' | 'Resolved' | 'Escalated';
+export type AssetStatus = 'Operational' | 'Degraded' | 'At Risk' | 'Offline';
+export type TeamStatus = 'Available' | 'En Route' | 'Assigned' | 'Offline';
+export type LocationStatus = 'Normal' | 'Risk Detected' | 'At Risk' | 'Restricted';
 
 export interface Incident {
   id: string;
   type: string;
   severity: Severity;
   status: IncidentStatus;
+  description?: string;
+  timestamp: string;
   confidence: number;
 }
 
 export interface Location {
   id: string;
   name: string;
-  type: string;
+  coordinates?: [number, number];
   status: LocationStatus;
 }
 
@@ -25,22 +26,25 @@ export interface Asset {
   name: string;
   type: string;
   status: AssetStatus;
+  coordinates?: [number, number];
 }
 
 export interface Team {
   id: string;
   name: string;
+  type?: string;
   status: TeamStatus;
+  coordinates?: [number, number];
 }
 
 export interface RecommendedAction {
   id: string;
   title: string;
-  priority: Severity;
   reason: string;
-  evidence: string[];
+  priority: Severity;
+  state: 'Pending' | 'Approved' | 'Hold' | 'Rejected';
   confidence: number;
-  state: ActionState;
+  evidence: string[];
 }
 
 export interface LogEntry {
@@ -48,12 +52,12 @@ export interface LogEntry {
   timestamp: string;
   message: string;
   actor: string;
-  type: 'action' | 'system';
+  type: 'system' | 'action';
 }
 
 export interface SystemState {
-  incident: Incident | null;
-  location: Location | null;
+  incident: Incident;
+  location: Location;
   assets: Asset[];
   teams: Team[];
   actions: RecommendedAction[];

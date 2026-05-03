@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, AlertTriangle, Loader2 } from 'lucide-react';
+import { Send, AlertTriangle, Loader2, Dices } from 'lucide-react';
 import { translations } from '../utils/i18n';
 import { motion } from 'framer-motion';
 
@@ -7,11 +7,12 @@ interface Props {
   t: typeof translations['en'];
   onAnalyze: (text: string) => void;
   onSimulateSecond: () => void;
+  onGenerateRandom: () => void;
   hasInitialReport: boolean;
   isAnalyzing?: boolean;
 }
 
-export const IncidentInput: React.FC<Props> = ({ t, onAnalyze, onSimulateSecond, hasInitialReport, isAnalyzing }) => {
+export const IncidentInput: React.FC<Props> = ({ t, onAnalyze, onSimulateSecond, onGenerateRandom, hasInitialReport, isAnalyzing }) => {
   const [text, setText] = useState('');
 
   const handleAnalyze = () => {
@@ -20,11 +21,29 @@ export const IncidentInput: React.FC<Props> = ({ t, onAnalyze, onSimulateSecond,
     }
   };
 
+
+
+  // Allow parent to set text if needed
+  React.useEffect(() => {
+    // This is a simple way to sync text if the parent generates it
+    // But for now, let's just make the parent call onAnalyze with the random text
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-panel border border-border rounded-lg p-4 overflow-y-auto custom-scrollbar shadow-inner">
-      <div className="flex items-center gap-2 mb-4">
-        <AlertTriangle className="text-accent" size={20} />
-        <h2 className="text-lg font-semibold tracking-wide">{t.incomingReport}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="text-accent" size={20} />
+          <h2 className="text-lg font-semibold tracking-wide">{t.incomingReport}</h2>
+        </div>
+        <button 
+          onClick={onGenerateRandom}
+          disabled={isAnalyzing}
+          className="p-1.5 rounded bg-accent/10 text-accent hover:bg-accent/20 transition-colors border border-accent/20"
+          title={t.randomScenarioBtn}
+        >
+          <Dices size={18} />
+        </button>
       </div>
       
       <div className="relative flex-1 flex flex-col mb-4 min-h-[200px]">
