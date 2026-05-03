@@ -1,4 +1,4 @@
-import { SystemState, Incident, Asset, Team, Location, Severity } from '../types';
+import { SystemState, Incident, Asset, Team, Location, Severity, RecommendedAction } from '../types';
 import { Language } from './i18n';
 
 export const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -34,22 +34,10 @@ export const generateRandomScenario = (lang: Language): string => {
   }
 };
 
-// Risk Scoring Matrix
-const SEVERITY_WEIGHTS = {
-  'Low': 10,
-  'Medium': 30,
-  'High': 60,
-  'Critical': 90
-};
-
-const ASSET_STATUS_IMPACT = {
-  'Operational': 0,
-  'Degraded': 15,
-  'At Risk': 30,
-  'Offline': 50
-};
-
 export const calculateSystemRisk = (state: Partial<SystemState>): number => {
+  const SEVERITY_WEIGHTS = { 'Low': 10, 'Medium': 30, 'High': 60, 'Critical': 90 };
+  const ASSET_STATUS_IMPACT = { 'Operational': 0, 'Degraded': 15, 'At Risk': 30, 'Offline': 50 };
+
   let risk = 0;
   if (state.incident) {
     risk += SEVERITY_WEIGHTS[state.incident.severity] || 0;
@@ -60,10 +48,10 @@ export const calculateSystemRisk = (state: Partial<SystemState>): number => {
     risk += (assetRisk / state.assets.length);
   }
   if (state.location?.status === 'At Risk') risk += 20;
-  if (state.location?.status === 'Restricted') risk -= 10; 
+  if (state.location?.status === 'Restricted') risk -= 15; 
   if (state.teams) {
     const assignedTeams = state.teams.filter(t => t.status === 'Assigned' || t.status === 'En Route').length;
-    risk -= (assignedTeams * 12); 
+    risk -= (assignedTeams * 15); 
   }
   return Math.min(100, Math.max(5, Math.round(risk)));
 };
@@ -108,33 +96,66 @@ export const parseIncident = (text: string, lang: Language, _currentState?: Syst
   };
 
   const assets: Asset[] = [
-    { id: 'as-1', name: isZh ? '区域电力系统' : 'Area power system', type: 'Infrastructure', status: hasElectric ? 'Degraded' : 'Operational', coordinates: [centerCoords[0] + 0.001, centerCoords[1] - 0.001] },
-    { id: 'as-3', name: isZh ? '紧急避难区' : 'Evacuation area', type: 'Safety', status: hasFire ? 'At Risk' : 'Operational', coordinates: [centerCoords[0] - 0.001, centerCoords[1] + 0.002] }
+    { id: 'as-1', name: isZh ? '区域电力节点' : 'Area Power Node', type: 'Infrastructure', status: hasElectric ? 'Degraded' : 'Operational', coordinates: [centerCoords[0] + 0.0012, centerCoords[1] - 0.0008] },
+    { id: 'as-3', name: isZh ? '主要避难点' : 'Primary Evac Point', type: 'Safety', status: hasFire ? 'At Risk' : 'Operational', coordinates: [centerCoords[0] - 0.0008, centerCoords[1] + 0.0015] }
   ];
 
   const teams: Team[] = [
-    { id: 'tm-1', name: isZh ? '校警队' : 'Campus Safety', status: 'Available', coordinates: [38.995, -76.940] },
-    { id: 'tm-2', name: isZh ? '消防应急队' : 'Fire Response', status: hasFire ? 'En Route' : 'Available', coordinates: [38.985, -76.935] },
-    { id: 'tm-3', name: isZh ? '医疗支援' : 'Medical Support', status: hasMedical ? 'En Route' : 'Available', coordinates: [38.992, -76.945] }
+    { id: 'tm-1', name: isZh ? '校警 402 号车' : 'Campus Safety #402', type: 'Security', status: 'Available', coordinates: [38.995, -76.940] },
+    { id: 'tm-2', name: isZh ? '消防队 12 号' : 'Fire Engine #12', type: 'Fire', status: hasFire ? 'En Route' : 'Available', coordinates: [38.985, -76.935] },
+    { id: 'tm-3', name: isZh ? '救护车 A-1' : 'Ambulance A-1', type: 'Medical', status: hasMedical ? 'En Route' : 'Available', coordinates: [38.992, -76.945] }
   ];
 
-  const actions = [
-    {
+  const actions: RecommendedAction[] = [];
+
+  if (hasSecurity) {
+    actions.push({
       id: generateId(),
-      title: hasSecurity ? (isZh ? '启动封锁协议' : 'Initiate Lockdown') : (isZh ? '派遣第一响应小组' : 'Dispatch First Response'),
-      reason: hasSecurity ? (isZh ? '报告发现武器。' : 'Weapon reported in vicinity.') : (isZh ? '基于实时报案描述，需要现场勘察。' : 'Based on initial report description, immediate field survey required.'),
-      priority: hasSecurity ? 'Critical' : 'High' as Severity,
-      state: 'Pending' as const,
+      title: isZh ? '实施区域封锁' : 'Execute Area Lockdown',
+      reason: isZh ? `基于 ${matchedLocName} 的持械报告。` : `Based on weapon report at ${matchedLocName}.`,
+      priority: 'Critical',
+      state: 'Pending',
       confidence: 0.98,
-      evidence: [text.substring(0, 30) + "..."]
-    }
-  ];
+      evidence: [isZh ? "部署：校警车从北区巡逻站出发，建议沿 Paint Branch Dr 拦截。" : "Deployment: Units from North Station, route via Paint Branch Dr for intercept."]
+    });
+  }
 
-  return {
-    incident,
-    location,
-    assets,
-    teams,
-    actions
-  };
+  if (hasFire) {
+    actions.push({
+      id: generateId(),
+      title: isZh ? '全员疏散至避难点' : 'Evacuate to Safety Point',
+      reason: isZh ? '火势有蔓延至电力节点的风险。' : 'Risk of fire spreading to Power Node.',
+      priority: 'High',
+      state: 'Pending',
+      confidence: 0.94,
+      evidence: [isZh ? `部署：疏散指引已同步至数字沙盘。避难点设在 ${matchedLocName} 西侧 200 米。` : `Deployment: Evac routes synced to HUD. Safety point 200m West of ${matchedLocName}.`]
+    });
+  }
+
+  if (hasMedical || severity === 'Critical') {
+    actions.push({
+      id: generateId(),
+      title: isZh ? '优先调度医疗支援' : 'Priority Medical Dispatch',
+      reason: isZh ? '报告中提及有人员受伤。' : 'Injuries reported in the field.',
+      priority: 'High',
+      state: 'Pending',
+      confidence: 0.96,
+      evidence: [isZh ? "部署：A-1 救护车建议从 University Blvd 入口进入以避开拥堵。" : "Deployment: Ambulance A-1 advised to enter via University Blvd to avoid traffic."]
+    });
+  }
+
+  // Fallback default action
+  if (actions.length === 0) {
+    actions.push({
+      id: generateId(),
+      title: isZh ? '派遣现场勘察小组' : 'Dispatch Survey Team',
+      reason: isZh ? '需要进一步确认现场受损资产。' : 'Field assessment required for asset integrity.',
+      priority: 'Medium',
+      state: 'Pending',
+      confidence: 0.88,
+      evidence: [isZh ? "部署：建议从最近的警务站派遣步行巡逻小组。" : "Deployment: Dispatch foot patrol from nearest substation."]
+    });
+  }
+
+  return { incident, location, assets, teams, actions };
 };

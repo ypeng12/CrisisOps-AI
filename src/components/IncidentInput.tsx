@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, AlertTriangle, Loader2, Dices } from 'lucide-react';
 import { translations } from '../utils/i18n';
 import { motion } from 'framer-motion';
@@ -10,24 +10,24 @@ interface Props {
   onGenerateRandom: () => void;
   hasInitialReport: boolean;
   isAnalyzing?: boolean;
+  externalText?: string;
 }
 
-export const IncidentInput: React.FC<Props> = ({ t, onAnalyze, onSimulateSecond, onGenerateRandom, hasInitialReport, isAnalyzing }) => {
+export const IncidentInput: React.FC<Props> = ({ t, onAnalyze, onSimulateSecond, onGenerateRandom, hasInitialReport, isAnalyzing, externalText }) => {
   const [text, setText] = useState('');
+
+  // Sync with external text (like from the random generator)
+  useEffect(() => {
+    if (externalText) {
+      setText(externalText);
+    }
+  }, [externalText]);
 
   const handleAnalyze = () => {
     if (text.trim() && !isAnalyzing) {
       onAnalyze(text);
     }
   };
-
-
-
-  // Allow parent to set text if needed
-  React.useEffect(() => {
-    // This is a simple way to sync text if the parent generates it
-    // But for now, let's just make the parent call onAnalyze with the random text
-  }, []);
 
   return (
     <div className="flex flex-col h-full bg-panel border border-border rounded-lg p-4 overflow-y-auto custom-scrollbar shadow-inner">

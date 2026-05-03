@@ -22,6 +22,7 @@ function App() {
   const [riskScore, setRiskScore] = useState(0);
   const [targetRisk, setTargetRisk] = useState(0);
   const [viewMode, setViewMode] = useState<'object' | 'map'>('object');
+  const [inputText, setInputText] = useState('');
 
   const [state, setState] = useState<Partial<SystemState>>({
     logs: [],
@@ -111,7 +112,10 @@ function App() {
 
   const handleGenerateRandom = () => {
     const randomText = generateRandomScenario(lang);
-    handleAnalyze(randomText);
+    setInputText(randomText); // Show it in the UI
+    setTimeout(() => {
+      handleAnalyze(randomText);
+    }, 500); // Small delay so user sees the text appear
   };
 
   const handleActionStateChange = (id: string, newState: 'Approved' | 'Hold' | 'Rejected') => {
@@ -234,6 +238,7 @@ function App() {
               onGenerateRandom={handleGenerateRandom}
               hasInitialReport={!!state.incident}
               isAnalyzing={isAnalyzing}
+              externalText={inputText}
             />
           </div>
 
