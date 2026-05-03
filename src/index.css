@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-background text-textMain font-sans;
+  }
+}
+
+@theme {
+  --color-background: #0a0a0a;
+  --color-panel: #151515;
+  --color-border: #333333;
+  --color-textMain: #e5e5e5;
+  --color-textMuted: #888888;
+  --color-accent: #3b82f6;
+  --color-critical: #ef4444;
+  --color-high: #f97316;
+  --color-medium: #eab308;
+  --color-low: #22c55e;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
