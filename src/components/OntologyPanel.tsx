@@ -1,168 +1,122 @@
 import React from 'react';
 import { SystemState } from '../types';
+import { Box, MapPin, Shield, Activity, BarChart3, Info } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { StatusBadge } from './StatusBadge';
-import { Network, MapPin, Box, Users, Activity, Share2, Server, User } from 'lucide-react';
-import { translations } from '../utils/i18n';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
-  t: typeof translations['en'];
+  t: any;
   state: Partial<SystemState>;
-  isAnalyzing?: boolean;
+  isAnalyzing: boolean;
 }
 
 export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
   if (!state.incident && !isAnalyzing) {
     return (
-      <div className="flex flex-col h-full bg-panel border border-border rounded-lg p-4 justify-center items-center text-textMuted text-center">
-        <Network size={48} className="mb-4 opacity-50" />
-        <p>{t.noTwin}</p>
+      <div className="h-full bg-panel border border-border rounded-lg flex flex-col items-center justify-center text-textMuted opacity-30 space-y-4">
+        <Box size={48} strokeWidth={1} />
+        <p className="text-sm font-medium tracking-widest uppercase">{t.noTwin}</p>
       </div>
     );
   }
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { x: -20, opacity: 0 },
-    show: { x: 0, opacity: 1 }
-  };
-
   return (
-    <div className="flex flex-col h-full bg-panel border border-border rounded-lg p-4 overflow-hidden">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Network className="text-accent" size={20} />
-          <h2 className="text-lg font-semibold tracking-wide">{t.operationalTwin}</h2>
-        </div>
-        <div className="flex items-center gap-4 text-[10px] font-mono text-textMuted">
-           <div className="flex items-center gap-1"><Server size={10} className="text-accent" /> SENSOR</div>
-           <div className="flex items-center gap-1"><User size={10} className="text-yellow-500" /> HUMAN</div>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-        <AnimatePresence mode="wait">
+    <div className="h-full grid grid-rows-2 gap-4">
+      {/* TOP: Incident & Infrastructure */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-panel border border-border rounded-lg p-4 shadow-xl overflow-hidden relative">
+          <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
+            <Activity size={18} className="text-accent" />
+            <h3 className="text-xs font-bold uppercase tracking-widest">{t.incident}</h3>
+          </div>
           {isAnalyzing ? (
-            <motion.div 
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-4"
-            >
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-24 bg-background/50 border border-border/50 rounded animate-pulse" />
-              ))}
-            </motion.div>
+            <div className="animate-pulse space-y-3">
+              <div className="h-4 bg-white/5 rounded w-3/4" />
+              <div className="h-4 bg-white/5 rounded w-1/2" />
+            </div>
           ) : (
-            <motion.div 
-              key="content"
-              variants={container}
-              initial="hidden"
-              animate="show"
-              className="space-y-4"
-            >
-              {/* Incident Card */}
-              <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors group">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Activity size={16} className="text-gray-400" />
-                    <h3 className="font-semibold text-sm">{t.incident}</h3>
-                  </div>
-                  <User size={14} className="text-yellow-500/50" />
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-gray-400">{t.type}</div>
-                  <div className="font-mono text-[11px] text-accent/80">{state.incident?.type}</div>
-                  <div className="text-gray-400">{t.severity}</div>
-                  <div><StatusBadge text={state.incident?.severity || ''} type="severity" /></div>
-                  <div className="text-gray-400">{t.status}</div>
-                  <div><StatusBadge text={state.incident?.status || ''} /></div>
-                  <div className="text-gray-400">{t.confidence}</div>
-                  <div className="text-accent font-mono text-xs">{(state.incident?.confidence || 0 * 100).toFixed(0)}%</div>
-                </div>
-              </motion.div>
-
-              {/* Location Card */}
-              {state.location && (
-                <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center gap-2">
-                      <MapPin size={16} className="text-gray-400" />
-                      <h3 className="font-semibold text-sm">{t.location}</h3>
-                    </div>
-                    <Server size={14} className="text-accent/50" />
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="font-mono text-xs">{state.location.name}</span>
-                    <StatusBadge text={state.location.status} />
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Assets Card */}
-              {state.assets && state.assets.length > 0 && (
-                <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center gap-2">
-                      <Box size={16} className="text-gray-400" />
-                      <h3 className="font-semibold text-sm">{t.assets}</h3>
-                    </div>
-                    <Server size={14} className="text-accent/50" />
-                  </div>
-                  <div className="space-y-2">
-                    {state.assets.map(asset => (
-                      <div key={asset.id} className="flex justify-between items-center text-sm">
-                        <span className="font-mono text-[10px] text-gray-300">{asset.name}</span>
-                        <StatusBadge text={asset.status} />
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Teams Card */}
-              {state.teams && state.teams.length > 0 && (
-                <motion.div variants={item} className="bg-background border border-border rounded p-3 hover:border-accent/30 transition-colors">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center gap-2">
-                      <Users size={16} className="text-gray-400" />
-                      <h3 className="font-semibold text-sm">{t.teams}</h3>
-                    </div>
-                    <Server size={14} className="text-accent/50" />
-                  </div>
-                  <div className="space-y-2">
-                    {state.teams.map(team => (
-                      <div key={team.id} className="flex justify-between items-center text-sm">
-                        <span className="font-mono text-[10px] text-gray-300">{team.name}</span>
-                        <StatusBadge text={team.status} />
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </motion.div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center bg-black/30 p-2 rounded">
+                <span className="text-[10px] text-textMuted uppercase font-bold">{t.type}</span>
+                <span className="text-sm font-mono text-white">{state.incident?.type}</span>
+              </div>
+              <div className="flex justify-between items-center bg-black/30 p-2 rounded">
+                <span className="text-[10px] text-textMuted uppercase font-bold">{t.severity}</span>
+                <StatusBadge status={state.incident?.severity || 'Low'} type="severity" />
+              </div>
+              <div className="flex justify-between items-center bg-black/30 p-2 rounded">
+                <span className="text-[10px] text-textMuted uppercase font-bold">{t.location}</span>
+                <span className="text-xs font-medium text-blue-400">{state.location?.name}</span>
+              </div>
+            </div>
           )}
-        </AnimatePresence>
+          <div className="absolute top-2 right-2 opacity-10">
+             <BarChart3 size={60} />
+          </div>
+        </div>
+
+        <div className="bg-panel border border-border rounded-lg p-4 shadow-xl">
+          <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
+            <Box size={18} className="text-accent" />
+            <h3 className="text-xs font-bold uppercase tracking-widest">{t.assets}</h3>
+          </div>
+          <div className="space-y-3 max-h-[160px] overflow-y-auto custom-scrollbar">
+            {state.assets?.map((asset) => (
+              <div key={asset.id} className="p-2 bg-black/30 rounded border border-white/5">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-[10px] font-bold text-white uppercase">{asset.name}</span>
+                  <StatusBadge status={asset.status} type="status" />
+                </div>
+                <div className="flex items-center gap-4 mt-2">
+                   <div className="flex-1">
+                      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className={`h-full ${asset.status === 'Operational' ? 'bg-green-500' : 'bg-red-500'} w-full opacity-50`} />
+                      </div>
+                      <div className="flex justify-between text-[7px] text-textMuted mt-1">
+                        <span>LOAD: 12%</span>
+                        <span>Uptime: 99.9%</span>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Relationship Placeholder */}
-      <div className="mt-4 p-2 bg-black/40 rounded border border-border/40">
-        <div className="flex items-center gap-2 mb-1 opacity-60">
-           <Share2 size={12} />
-           <span className="text-[10px] uppercase tracking-widest font-mono">Object Relationships</span>
+      {/* BOTTOM: Teams & Tactical Readiness */}
+      <div className="bg-panel border border-border rounded-lg p-4 shadow-xl">
+        <div className="flex items-center gap-2 mb-4 border-b border-border pb-2">
+          <Shield size={18} className="text-accent" />
+          <h3 className="text-xs font-bold uppercase tracking-widest">{t.teams}</h3>
         </div>
-        <div className="h-12 flex items-center justify-center border border-dashed border-border/30 rounded">
-            <span className="text-[9px] text-textMuted font-mono italic">Graph view active: Incident → Asset Impact Detected</span>
+        <div className="grid grid-cols-3 gap-3">
+          {state.teams?.map((team) => (
+            <motion.div 
+              key={team.id}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="p-3 bg-black/30 rounded-lg border border-white/5 flex flex-col justify-between"
+            >
+              <div>
+                <div className="text-[10px] font-bold text-white mb-1 truncate">{team.name}</div>
+                <StatusBadge status={team.status} type="status" />
+              </div>
+              <div className="mt-3 space-y-1.5">
+                <div className="flex justify-between text-[8px] text-textMuted uppercase font-bold">
+                  <span>Fuel</span>
+                  <span className="text-blue-400">82%</span>
+                </div>
+                <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                   <div className="w-[82%] h-full bg-blue-500" />
+                </div>
+                <div className="flex justify-between text-[8px] text-textMuted uppercase font-bold">
+                  <span>Capacity</span>
+                  <span className="text-green-400">Full</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>

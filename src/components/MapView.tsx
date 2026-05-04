@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { SystemState } from '../types';
+import { Wind, Thermometer, Droplets } from 'lucide-react';
 
 interface Props {
   state: Partial<SystemState>;
@@ -11,15 +12,16 @@ export const MapView: React.FC<Props> = ({ state }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
+  const [showPrediction, setShowPrediction] = useState(false);
 
-  const incidentLocation = state.location?.coordinates || [38.9912, -76.9370];
+  const incidentLocation = state.location?.coordinates || [34.0628, -118.4414];
 
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
 
     const map = L.map(mapContainerRef.current, {
       center: incidentLocation,
-      zoom: 16,
+      zoom: 15,
       zoomControl: false,
       attributionControl: false
     });
@@ -47,49 +49,49 @@ export const MapView: React.FC<Props> = ({ state }) => {
 
     layerGroup.clearLayers();
 
+    // Current Incident
     const incidentIcon = L.divIcon({
       className: 'custom-incident-icon',
-      html: `<div style="background-color: #ef4444; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 15px #ef4444;" class="animate-pulse"></div>`,
-      iconSize: [16, 16],
-      iconAnchor: [8, 8]
+      html: `<div style="background-color: #ef4444; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 20px #ef4444;" class="animate-pulse"></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
     });
 
     L.marker(incidentLocation, { icon: incidentIcon })
-      .bindTooltip(`<b>${state.incident?.type || 'INCIDENT'}</b>`, { permanent: true, direction: 'top', className: 'tactical-tooltip' })
+      .bindTooltip(`<b>CURRENT SITE</b>`, { permanent: true, direction: 'top', className: 'tactical-tooltip' })
       .addTo(layerGroup);
 
-    const isSecurityThreat = state.incident?.type.toLowerCase().includes('security') || state.incident?.type.toLowerCase().includes('枪');
-    if (isSecurityThreat) {
+    // PREDICTION LAYER (Visualizing fire spread or threat expansion)
+    if (showPrediction) {
       L.circle(incidentLocation, {
-        radius: 200,
-        color: '#ef4444',
-        fillColor: '#ef4444',
-        fillOpacity: 0.1,
+        radius: 450,
+        color: '#f97316',
+        fillColor: '#f97316',
+        fillOpacity: 0.15,
         weight: 1,
-        dashArray: '5, 10'
-      }).addTo(layerGroup);
+        dashArray: '10, 10'
+      }).bindTooltip('PREDICTED IMPACT (+15m)', { sticky: true }).addTo(layerGroup);
     }
 
     const teamIcon = (type?: string) => L.divIcon({
       className: 'custom-team-icon',
-      html: `<div style="background-color: ${type === 'Security' ? '#3b82f6' : type === 'Fire' ? '#f59e0b' : '#10b981'}; width: 12px; height: 12px; border-radius: 3px; border: 1px solid white;"></div>`,
+      html: `<div style="background-color: ${type === 'Security' ? '#3b82f6' : '#f59e0b'}; width: 12px; height: 12px; border-radius: 3px; border: 1px solid white;"></div>`,
       iconSize: [12, 12],
       iconAnchor: [6, 6]
     });
 
     state.teams?.forEach(team => {
       if (!team.coordinates) return;
-      
       L.marker(team.coordinates, { icon: teamIcon(team.type) })
-        .bindTooltip(`${team.name}`, { permanent: false, direction: 'bottom', className: 'unit-tooltip' })
+        .bindTooltip(`${team.name}`, { direction: 'bottom' })
         .addTo(layerGroup);
 
       if (team.status === 'Assigned' || team.status === 'En Route') {
         L.polyline([team.coordinates, incidentLocation], {
-          color: team.type === 'Security' ? '#3b82f6' : team.type === 'Fire' ? '#f59e0b' : '#10b981',
+          color: team.type === 'Security' ? '#3b82f6' : '#f59e0b',
           weight: 2,
           dashArray: '5, 5',
-          opacity: 0.8
+          opacity: 0.6
         }).addTo(layerGroup);
       }
     });
@@ -97,62 +99,66 @@ export const MapView: React.FC<Props> = ({ state }) => {
     state.assets?.forEach(asset => {
       if (!asset.coordinates) return;
       L.circle(asset.coordinates, {
-        radius: 12,
+        radius: 15,
         color: asset.status === 'Operational' ? '#22c55e' : '#ef4444',
-        fillOpacity: 0.3,
+        fillOpacity: 0.2,
         weight: 1
-      }).bindTooltip(`${asset.name}`, { permanent: false, direction: 'right' }).addTo(layerGroup);
+      }).addTo(layerGroup);
     });
 
-    map.panTo(incidentLocation, { animate: true });
+    map.panTo(incidentLocation);
 
-  }, [state, incidentLocation]);
+  }, [state, incidentLocation, showPrediction]);
 
   return (
     <div className="h-full w-full rounded-lg overflow-hidden border border-border bg-[#111] relative min-h-[400px]">
       <div ref={mapContainerRef} className="h-full w-full z-0" />
       
-      {/* TACTICAL LEGEND */}
-      <div className="absolute bottom-4 left-4 z-[1000] bg-black/85 backdrop-blur-md border border-white/10 p-3 rounded shadow-2xl pointer-events-none">
-        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 border-b border-white/10 pb-1">Tactical Legend</h4>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-             <span className="text-[9px] text-gray-300">INCIDENT SITE</span>
-          </div>
-          <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-sm bg-blue-500" />
-             <span className="text-[9px] text-gray-300">SECURITY (POLICE)</span>
-          </div>
-          <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-sm bg-yellow-500" />
-             <span className="text-[9px] text-gray-300">FIRE / INFRA</span>
-          </div>
-          <div className="flex items-center gap-2">
-             <div className="w-2 h-2 rounded-sm bg-green-500" />
-             <span className="text-[9px] text-gray-300">MEDICAL UNITS</span>
-          </div>
-          <div className="flex items-center gap-2">
-             <div className="w-4 h-[1px] border-t border-dashed border-blue-400" />
-             <span className="text-[9px] text-gray-300">ACTIVE DISPATCH ROUTE</span>
-          </div>
+      {/* WEATHER OVERLAY */}
+      <div className="absolute top-3 left-3 z-[1000] flex gap-2">
+        <div className="bg-black/80 backdrop-blur-md border border-border p-2 rounded flex items-center gap-3 shadow-xl">
+           <div className="flex items-center gap-1.5 text-blue-400">
+             <Wind size={14} />
+             <span className="text-[10px] font-mono font-bold">WNW 12mph</span>
+           </div>
+           <div className="w-px h-3 bg-white/10" />
+           <div className="flex items-center gap-1.5 text-orange-400">
+             <Thermometer size={14} />
+             <span className="text-[10px] font-mono font-bold">78°F</span>
+           </div>
+           <div className="w-px h-3 bg-white/10" />
+           <div className="flex items-center gap-1.5 text-cyan-400">
+             <Droplets size={14} />
+             <span className="text-[10px] font-mono font-bold">42%</span>
+           </div>
+        </div>
+      </div>
+
+      {/* TACTICAL CONTROLS */}
+      <div className="absolute bottom-4 right-4 z-[1000] flex flex-col gap-2">
+        <button 
+          onClick={() => setShowPrediction(!showPrediction)}
+          className={`px-3 py-1.5 rounded border text-[9px] font-bold tracking-widest transition-all ${showPrediction ? 'bg-orange-600 border-orange-500 text-white' : 'bg-black/80 border-border text-gray-400'}`}
+        >
+          {showPrediction ? 'DISABLE PROJECTION' : 'ENABLE PREDICTIVE LAYER'}
+        </button>
+      </div>
+
+      <div className="absolute top-3 right-3 z-[1000] bg-black/80 backdrop-blur-md border border-border p-2 rounded text-[10px] font-mono text-white pointer-events-none">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> TACTICAL SITE
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-sm bg-blue-500" /> UNITS
         </div>
       </div>
 
       <style>{`
         .tactical-tooltip {
-          background: rgba(239, 68, 68, 0.9) !important;
-          color: white !important;
-          border: none !important;
-          font-weight: bold !important;
-          font-size: 10px !important;
-          border-radius: 2px !important;
-          box-shadow: 0 0 10px rgba(0,0,0,0.5) !important;
-        }
-        .unit-tooltip {
           background: rgba(0, 0, 0, 0.8) !important;
-          color: #3b82f6 !important;
-          border: 1px solid #3b82f6 !important;
+          color: #ef4444 !important;
+          border: 1px solid #ef4444 !important;
+          font-weight: bold !important;
           font-size: 8px !important;
           padding: 1px 4px !important;
         }

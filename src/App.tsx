@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Activity, Globe, Cpu, Zap } from 'lucide-react';
+import { Shield, Activity, Globe, Cpu, Zap, Search } from 'lucide-react';
 import { IncidentInput } from './components/IncidentInput';
 import { OntologyPanel } from './components/OntologyPanel';
 import { RecommendationPanel } from './components/RecommendationPanel';
@@ -15,6 +15,7 @@ function App() {
   const [lang, setLang] = useState<Language>('en');
   const t = translations[lang];
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isIngesting, setIsIngesting] = useState(false);
   const [riskScore, setRiskScore] = useState(0);
   const [targetRisk, setTargetRisk] = useState(0);
   const [viewMode, setViewMode] = useState<'object' | 'map'>('object');
@@ -44,12 +45,16 @@ function App() {
 
   const handleAnalyze = (text: string) => {
     setIsAnalyzing(true);
+    // Simulate Knowledge Ingestion for new areas
+    const isNewArea = !state.location;
+    if (isNewArea) setIsIngesting(true);
+
     setTimeout(() => {
       const result = parseIncident(text, lang, state as SystemState);
       const newLog: LogEntry = {
         id: Math.random().toString(),
         timestamp: new Date().toISOString(),
-        message: `Routed to ${result.incident?.severity === 'Critical' ? 'Cloud LLM' : 'Local Edge'}. Confidence: ${(result.incident?.confidence || 0.95) * 100}%`,
+        message: isNewArea ? `Area context ingested. Knowledge base synced for ${result.location?.name}.` : `Incident triaged: ${result.incident?.type}`,
         actor: 'System',
         type: 'system'
       };
@@ -60,7 +65,8 @@ function App() {
         logs: [newLog, ...(prev.logs || [])]
       }));
       setIsAnalyzing(false);
-    }, 1200);
+      setIsIngesting(false);
+    }, 1500);
   };
 
   const handleSimulateSecond = () => {
@@ -125,20 +131,20 @@ function App() {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-xl font-bold tracking-tighter uppercase">{t.title}</h1>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-bold text-green-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  {t.headerTag}
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                  REGIONAL OPS CENTER: LOS ANGELES
                 </div>
               </div>
               <p className="text-[11px] text-textMuted font-medium uppercase tracking-widest mt-0.5 opacity-80">
-                {t.subtitle}
+                Multi-Domain Operational Intelligence Platform
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-8">
             <div className="flex flex-col items-end">
-              <div className="text-[10px] text-textMuted uppercase font-bold tracking-tighter mb-1">System Risk Index</div>
+              <div className="text-[10px] text-textMuted uppercase font-bold tracking-tighter mb-1">Regional Risk Index</div>
               <div className="flex items-center gap-3">
                 <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
                   <motion.div 
@@ -167,7 +173,7 @@ function App() {
       <main className="max-w-[1800px] mx-auto p-6 grid grid-cols-12 gap-6 h-[calc(100vh-80px)]">
         {/* Left Column: Input & Routing */}
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-4 overflow-hidden">
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 relative">
             <IncidentInput 
               t={t}
               onAnalyze={handleAnalyze} 
@@ -177,6 +183,16 @@ function App() {
               isAnalyzing={isAnalyzing}
               externalText={inputText}
             />
+            {isIngesting && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute inset-x-4 bottom-24 p-3 bg-blue-600/90 text-white text-[10px] rounded font-bold flex items-center gap-2 z-50 shadow-2xl"
+              >
+                <Search size={14} className="animate-bounce" />
+                INGESTING REGIONAL KNOWLEDGE... SYNCING INFRASTRUCTURE MAP
+              </motion.div>
+            )}
           </div>
           
           <AgentRoutingPanel 
@@ -194,17 +210,17 @@ function App() {
               onClick={() => setViewMode('object')}
               className={`px-4 py-1.5 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${viewMode === 'object' ? 'bg-accent text-white shadow-lg' : 'text-textMuted hover:text-white'}`}
             >
-              Objects
+              System Objects
             </button>
             <button 
               onClick={() => setViewMode('map')}
               className={`px-4 py-1.5 rounded text-[10px] font-bold tracking-widest uppercase transition-all ${viewMode === 'map' ? 'bg-accent text-white shadow-lg' : 'text-textMuted hover:text-white'}`}
             >
-              Tactical Map
+              Regional Map
             </button>
           </div>
 
-          <div className="flex-1 min-h-0 relative border border-white/5 rounded-lg overflow-hidden">
+          <div className="flex-1 min-h-0 relative border border-white/5 rounded-lg overflow-hidden shadow-2xl">
             <AnimatePresence mode="wait">
               {viewMode === 'object' ? (
                 <motion.div 
@@ -252,25 +268,20 @@ function App() {
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-1.5">
             <Cpu size={12} className="text-blue-200" />
-            <span className="opacity-80">INFERENCE ENGINE:</span>
-            <span className="tracking-widest">COLLABORATIVE-AI-ROUTER-V2.1</span>
+            <span className="opacity-80">AGENT ENGINE:</span>
+            <span className="tracking-widest uppercase">Collaborative-Router-v2.5</span>
           </div>
           <div className="w-px h-3 bg-white/20" />
           <div className="flex items-center gap-1.5 text-blue-100">
             <Zap size={12} className="text-yellow-300" />
-            <span>AVG LATENCY: 42ms (TTFT)</span>
-          </div>
-          <div className="w-px h-3 bg-white/20" />
-          <div className="flex items-center gap-1.5">
-            <Shield className="text-green-300" size={12} />
-            <span>LOCAL PROCESSING RATE: {'>'}95.4%</span>
+            <span>REGION: CALIFORNIA-SW (LA-CORE)</span>
           </div>
         </div>
         <div className="flex items-center gap-4 uppercase tracking-tighter font-mono">
-          <span className="opacity-60">HALLUCINATION-MITIGATION: ACTIVE</span>
+          <span className="opacity-60">CONTEXT-AWARE CACHING: ENABLED</span>
           <div className="flex items-center gap-1">
             <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            LIVE-EDGE-NODE: UMD-CP-CORE-01
+            LIVE-NODE: LA-WEST-NODE-01
           </div>
         </div>
       </footer>
