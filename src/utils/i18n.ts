@@ -1,7 +1,8 @@
 export const translations = {
   en: {
     title: "CrisisOps AI",
-    subtitle: "Emergency Response Operations Agent",
+    subtitle: "Agentic Emergency Response Operations System",
+    headerTag: "Operational AI • Human-in-the-loop • Audit-ready",
     incomingReport: "Incoming Report",
     analyzeBtn: "Analyze Incident",
     simulateBtn: "Simulate Second Report (Escalation)",
@@ -11,7 +12,17 @@ export const translations = {
     auditLog: "Audit Log",
     whyNotChatbot: "Why not a chatbot?",
     chatbotDesc: "Unstructured text, no live state, no audit trail.",
-    crisisOpsDesc: "Extracts operational objects, recommends actions, requires human approval, logs decisions, updates live state.",
+    crisisOpsDesc: "Turns messy reports into structured operational objects, recommended actions, and auditable logs.",
+    
+    // Routing Panel
+    routingLayer: "Cloud-Edge Agent Routing Layer",
+    selectedRoute: "Inference Path",
+    routingBasis: "Routing Basis",
+    latency: "Latency (TTFT)",
+    executionMode: "Execution Mode",
+    low: "Low",
+    hallucinationCheck: "Hallucination Mitigation",
+    localProcessing: "Local Processing",
     
     // Labels
     incident: "Incident",
@@ -39,8 +50,9 @@ export const translations = {
     operator: "Operator"
   },
   zh: {
-    title: "CrisisOps AI 应急指挥系统",
-    subtitle: "智能应急响应运营代理",
+    title: "CrisisOps AI",
+    subtitle: "代理化应急响应运营系统",
+    headerTag: "运营级 AI • 人机协作 • 审计就绪",
     incomingReport: "实时警情输入",
     analyzeBtn: "分析警情",
     simulateBtn: "模拟后续报告 (事态升级)",
@@ -50,8 +62,18 @@ export const translations = {
     auditLog: "审计日志",
     whyNotChatbot: "为什么这不是聊天机器人？",
     chatbotDesc: "非结构化文本，无实时状态，无审计追踪。",
-    crisisOpsDesc: "提取运营对象，推荐可执行方案，需要人工审批，记录所有决策，维护实时状态。",
+    crisisOpsDesc: "将混乱的报告转化为结构化对象、推荐行动及审计日志。",
     
+    // Routing Panel
+    routingLayer: "云边协同代理路由层",
+    selectedRoute: "推理路径",
+    routingBasis: "路由依据",
+    latency: "延迟 (TTFT)",
+    executionMode: "执行模式",
+    low: "低延迟",
+    hallucinationCheck: "幻觉抑制框架",
+    localProcessing: "本地处理率",
+
     // Labels
     incident: "突发事件",
     location: "地理位置",
