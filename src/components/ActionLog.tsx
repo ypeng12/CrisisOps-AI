@@ -8,7 +8,7 @@ interface Props {
   logs: LogEntry[];
 }
 
-export const ActionLog: React.FC<Props> = ({ t, logs }) => {
+export const ActionLog: React.FC<Props> = ({ logs }) => {
   const [activeTab, setActiveTab] = useState<'system' | 'radio'>('system');
 
   // Simulated Radio Comms

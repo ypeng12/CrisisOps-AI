@@ -10,7 +10,7 @@ interface Props {
   isAnalyzing?: boolean;
 }
 
-export const AgentRoutingPanel: React.FC<Props> = ({ t, severity, confidence, isAnalyzing }) => {
+export const AgentRoutingPanel: React.FC<Props> = ({ t, severity, isAnalyzing }) => {
   if (!severity && !isAnalyzing) return null;
 
   const getRoute = () => {
@@ -59,19 +59,19 @@ export const AgentRoutingPanel: React.FC<Props> = ({ t, severity, confidence, is
         {/* Technical KPIs */}
         <div className="grid grid-cols-2 gap-2 bg-black/30 rounded p-2 text-[9px] font-mono">
           <div className="border-r border-border/50">
-            <div className="text-textMuted mb-0.5 flex items-center gap-1"><Zap size={10} className="text-yellow-500" /> {t.latency}:</div>
+            <div className="text-textMuted mb-0.5 flex items-center gap-1"><Zap size={10} className="text-yellow-500" /> LATENCY (TTFT):</div>
             <div className="text-white">42ms <span className="text-[8px] text-green-400">(Local Fast-Path)</span></div>
           </div>
           <div>
-            <div className="text-textMuted mb-0.5 flex items-center gap-1"><ShieldCheck size={10} className="text-blue-500" /> {t.hallucinationCheck}:</div>
+            <div className="text-textMuted mb-0.5 flex items-center gap-1"><ShieldCheck size={10} className="text-blue-500" /> CONSISTENCY CHECK:</div>
             <div className="text-blue-400 font-bold uppercase">Active (99.2%)</div>
           </div>
           <div className="border-r border-border/50 pt-1">
-            <div className="text-textMuted mb-0.5">{t.routingBasis}:</div>
+            <div className="text-textMuted mb-0.5">ROUTING BASIS:</div>
             <div className="text-white truncate">Intent Complexity: {severity === 'Critical' ? 'HIGH' : 'LOW'}</div>
           </div>
           <div className="pt-1">
-            <div className="text-textMuted mb-0.5">{t.localProcessing}:</div>
+            <div className="text-textMuted mb-0.5">LOCAL PROCESSING:</div>
             <div className="text-green-400 font-bold">95.4%</div>
           </div>
         </div>

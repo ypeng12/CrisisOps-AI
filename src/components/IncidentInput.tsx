@@ -99,17 +99,17 @@ export const IncidentInput: React.FC<Props> = ({ t, onAnalyze, onSimulateSecond,
           transition={{ delay: 0.5 }}
           className="bg-blue-950/10 border border-blue-900/20 rounded p-3"
         >
-          <h3 className="text-[10px] font-bold text-blue-400 uppercase mb-2 tracking-widest">{t.whyNotChatbot}</h3>
+          <h3 className="text-[10px] font-bold text-blue-400 uppercase mb-2 tracking-widest">ARCHITECTURE ADVANTAGE</h3>
           <ul className="text-[10px] text-gray-400 space-y-1.5 leading-relaxed">
             <li className="flex gap-2">
               <span className="text-red-400 font-bold">✕</span> 
-              <span><span className="text-gray-300 font-semibold">{t.chatbotDesc.split(',')[0]}</span>, {t.chatbotDesc.split(',').slice(1).join(',')}</span>
+              <span>UNSTRUCTURED TEXT, NO LIVE STATE, NO AUDIT TRAIL.</span>
             </li>
             <li className="flex gap-2">
               <span className="text-green-400 font-bold">✓</span> 
               <span className="text-gray-300 font-semibold">CrisisOps AI:</span>
             </li>
-            <li className="pl-5 text-gray-400">{t.crisisOpsDesc}</li>
+            <li className="pl-5 text-gray-400">EXTRACTS OPERATIONAL OBJECTS, RECOMMENDS ACTIONS, REQUIRES HUMAN APPROVAL, LOGS DECISIONS.</li>
           </ul>
         </motion.div>
       </div>

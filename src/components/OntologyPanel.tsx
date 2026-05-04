@@ -1,6 +1,6 @@
 import React from 'react';
 import { SystemState } from '../types';
-import { Box, MapPin, Shield, Activity, BarChart3, Info } from 'lucide-react';
+import { Box, Shield, Activity, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { StatusBadge } from './StatusBadge';
 
@@ -42,7 +42,7 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
               </div>
               <div className="flex justify-between items-center bg-black/30 p-2 rounded">
                 <span className="text-[10px] text-textMuted uppercase font-bold">{t.severity}</span>
-                <StatusBadge status={state.incident?.severity || 'Low'} type="severity" />
+                <StatusBadge text={state.incident?.severity || 'Low'} type="severity" />
               </div>
               <div className="flex justify-between items-center bg-black/30 p-2 rounded">
                 <span className="text-[10px] text-textMuted uppercase font-bold">{t.location}</span>
@@ -65,7 +65,7 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
               <div key={asset.id} className="p-2 bg-black/30 rounded border border-white/5">
                 <div className="flex justify-between items-start mb-1">
                   <span className="text-[10px] font-bold text-white uppercase">{asset.name}</span>
-                  <StatusBadge status={asset.status} type="status" />
+                  <StatusBadge text={asset.status} type="status" />
                 </div>
                 <div className="flex items-center gap-4 mt-2">
                    <div className="flex-1">
@@ -100,7 +100,7 @@ export const OntologyPanel: React.FC<Props> = ({ t, state, isAnalyzing }) => {
             >
               <div>
                 <div className="text-[10px] font-bold text-white mb-1 truncate">{team.name}</div>
-                <StatusBadge status={team.status} type="status" />
+                <StatusBadge text={team.status} type="status" />
               </div>
               <div className="mt-3 space-y-1.5">
                 <div className="flex justify-between text-[8px] text-textMuted uppercase font-bold">

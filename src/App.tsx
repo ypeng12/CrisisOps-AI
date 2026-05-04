@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Activity, Globe, Cpu, Zap, Search, LayoutGrid } from 'lucide-react';
+import { Shield, Globe, Cpu, Zap, Search, LayoutGrid } from 'lucide-react';
 import { IncidentInput } from './components/IncidentInput';
 import { OntologyPanel } from './components/OntologyPanel';
 import { RecommendationPanel } from './components/RecommendationPanel';

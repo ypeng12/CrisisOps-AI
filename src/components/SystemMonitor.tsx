@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, BarChart3, Wifi, Cpu, Gauge } from 'lucide-react';
+import { Activity, Wifi, Cpu, Gauge } from 'lucide-react';
 
 interface Props {
   t: any;
