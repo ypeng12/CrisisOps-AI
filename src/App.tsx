@@ -214,7 +214,7 @@ function App() {
               onClick={() => setViewMode('object')}
               className={`px-5 py-1.5 rounded text-[10px] font-bold tracking-widest uppercase transition-all flex items-center gap-2 ${viewMode === 'object' ? 'bg-accent text-white shadow-lg' : 'bg-panel text-textMuted border border-border'}`}
             >
-              <LayoutGrid size={14} /> System Objects
+              <LayoutGrid size={14} /> Ontology View
             </button>
           </div>
 
