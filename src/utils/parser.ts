@@ -40,9 +40,9 @@ export const generateRandomScenario = (lang: Language): string => {
   const time = new Date().toLocaleTimeString(isZh ? 'zh-CN' : 'en-US', { hour12: false });
 
   if (isZh) {
-    return `[${time}] ${regionName} 调度中心报告：在 ${loc} 附近发现 ${incident.type}。检测到 ${incident.keywords[1]} 迹象。正在同步该区域知识库。`;
+    return `[${time}] ${regionName} 调度中心收到来自 ${reporter} 的报告：在 ${loc} 附近发现 ${incident.type}。检测到 ${incident.keywords[1]} 迹象。正在同步该区域知识库。`;
   } else {
-    return `[${time}] ${regionName} Ops: ${incident.type} detected near ${loc}. ${incident.keywords[1]} signature confirmed. Syncing regional knowledge base.`;
+    return `[${time}] ${regionName} Ops received report from ${reporter}: ${incident.type} detected near ${loc}. ${incident.keywords[1]} signature confirmed. Syncing regional knowledge base.`;
   }
 };
 
